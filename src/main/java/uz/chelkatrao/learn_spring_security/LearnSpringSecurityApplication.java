@@ -21,16 +21,6 @@ public class LearnSpringSecurityApplication {
         SpringApplication.run(LearnSpringSecurityApplication.class, args);
     }
 
-    /***
-     << Basic Authentication configuration >>
-     @Bean public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-     return http
-     .httpBasic().and()
-     .authorizeHttpRequests()
-     .anyRequest().authenticated().and()
-     .build();
-     }*/
-
     @Bean
     public RouterFunction<ServerResponse> routerFunction() {
         return RouterFunctions.route()
