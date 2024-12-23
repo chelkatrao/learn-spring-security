@@ -27,17 +27,8 @@ public class LearnSpringSecurityApplication {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        BasicAuthenticationEntryPoint authenticationEntryPoint = new BasicAuthenticationEntryPoint();
-        authenticationEntryPoint.setRealmName("Realm");
-        return http
-                .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
-                .exceptionHandling(eh-> eh.authenticationEntryPoint(authenticationEntryPoint))
-                .httpBasic(httpBasic -> {
-                    httpBasic.authenticationEntryPoint((request, response, authException) -> {
-                        authException.printStackTrace();
-                        authenticationEntryPoint.commence(request, response, authException);
-                    });
-                })
+        return http.httpBasic(Customizer.withDefaults())
+                .authorizeHttpRequests(auth-> auth.anyRequest().authenticated())
                 .build();
     }
 
