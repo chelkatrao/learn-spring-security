@@ -4,8 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.servlet.function.RouterFunction;
 import org.springframework.web.servlet.function.RouterFunctions;
 import org.springframework.web.servlet.function.ServerResponse;
@@ -21,15 +23,14 @@ public class LearnSpringSecurityApplication {
         SpringApplication.run(LearnSpringSecurityApplication.class, args);
     }
 
-    /***
-     << Basic Authentication configuration >>
-     @Bean public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-     return http
-     .httpBasic().and()
-     .authorizeHttpRequests()
-     .anyRequest().authenticated().and()
-     .build();
-     }*/
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        return http
+                .httpBasic().and()
+                .authorizeHttpRequests()
+                .anyRequest().authenticated().and()
+                .build();
+    }
 
     @Bean
     public RouterFunction<ServerResponse> routerFunction() {
