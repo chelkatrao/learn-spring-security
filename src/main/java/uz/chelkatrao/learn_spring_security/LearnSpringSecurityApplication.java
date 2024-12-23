@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
 import org.springframework.web.servlet.function.RouterFunction;
 import org.springframework.web.servlet.function.RouterFunctions;
 import org.springframework.web.servlet.function.ServerResponse;
@@ -26,9 +27,17 @@ public class LearnSpringSecurityApplication {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        BasicAuthenticationEntryPoint authenticationEntryPoint = new BasicAuthenticationEntryPoint();
+        authenticationEntryPoint.setRealmName("Realm");
         return http
                 .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
-                .httpBasic(Customizer.withDefaults())
+                .exceptionHandling(eh-> eh.authenticationEntryPoint(authenticationEntryPoint))
+                .httpBasic(httpBasic -> {
+                    httpBasic.authenticationEntryPoint((request, response, authException) -> {
+                        authException.printStackTrace();
+                        authenticationEntryPoint.commence(request, response, authException);
+                    });
+                })
                 .build();
     }
 
