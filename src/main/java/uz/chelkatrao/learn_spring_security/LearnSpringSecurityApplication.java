@@ -8,12 +8,14 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
 import org.springframework.web.servlet.function.RouterFunction;
 import org.springframework.web.servlet.function.RouterFunctions;
 import org.springframework.web.servlet.function.ServerResponse;
 
+import javax.sql.DataSource;
 import java.security.Principal;
 import java.util.Map;
 import java.util.Optional;
@@ -23,6 +25,11 @@ public class LearnSpringSecurityApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(LearnSpringSecurityApplication.class, args);
+    }
+
+    @Bean
+    public UserDetailsService userDetailsService(DataSource dataSource) {
+        return new JdbcUserDetailService(dataSource);
     }
 
     @Bean
