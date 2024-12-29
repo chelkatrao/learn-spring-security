@@ -8,12 +8,14 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
 import org.springframework.web.servlet.function.RouterFunction;
 import org.springframework.web.servlet.function.RouterFunctions;
 import org.springframework.web.servlet.function.ServerResponse;
 
+import javax.sql.DataSource;
 import java.security.Principal;
 import java.util.Map;
 import java.util.Optional;
@@ -26,18 +28,14 @@ public class LearnSpringSecurityApplication {
     }
 
     @Bean
+    public UserDetailsService userDetailsService(DataSource dataSource) {
+        return new JdbcUserDetailService(dataSource);
+    }
+
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        BasicAuthenticationEntryPoint authenticationEntryPoint = new BasicAuthenticationEntryPoint();
-        authenticationEntryPoint.setRealmName("Realm");
-        return http
-                .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
-                .exceptionHandling(eh-> eh.authenticationEntryPoint(authenticationEntryPoint))
-                .httpBasic(httpBasic -> {
-                    httpBasic.authenticationEntryPoint((request, response, authException) -> {
-                        authException.printStackTrace();
-                        authenticationEntryPoint.commence(request, response, authException);
-                    });
-                })
+        return http.httpBasic(Customizer.withDefaults())
+                .authorizeHttpRequests(auth-> auth.anyRequest().authenticated())
                 .build();
     }
 
