@@ -18,7 +18,7 @@ public class AccessTokenJwsStringSerializer implements Function<Token, String> {
 
     private final JWSSigner jwsSigner;
 
-    private JWSAlgorithm jwsAlgorithm = JWSAlgorithm.ES256;
+    private JWSAlgorithm jwsAlgorithm = JWSAlgorithm.HS256;
 
     public AccessTokenJwsStringSerializer(JWSSigner jwsSigner) {
         this.jwsSigner = jwsSigner;

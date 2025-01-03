@@ -18,7 +18,7 @@ public class RefreshTokenJweStringSerializer implements Function<Token, String> 
 
     private JWEAlgorithm jweAlgorithm = JWEAlgorithm.DIR;
 
-    private EncryptionMethod encryptionMethod = EncryptionMethod.A128CBC_HS256;
+    private EncryptionMethod encryptionMethod = EncryptionMethod.A128GCM;
 
 
     public RefreshTokenJweStringSerializer(JWEEncrypter jweEncrypter) {

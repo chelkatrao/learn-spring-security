@@ -5,9 +5,9 @@ spring:
         command: down
   sql:
     init:
-      mode: always
+      mode: never
 jwt:
-  access-token-key: '{"kty":"oct","k":"hi7S5RX5ZRZooHA0RKGctZ-KtR9FoESgCnH-3BNg5XI"}'
+  access-token-key: '{"kty":"oct","k":"secret-secret-secret-secret-secret-secret-secret-secret"}'
   refresh-token-key: '{"kty":"oct","k":"956PBFst1FguLr5irJD-aQ"}'
 server:
 #  http2:

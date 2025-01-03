@@ -1,16 +1,22 @@
 package uz.chelkatrao.learn_spring_security;
 
 import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.crypto.DirectDecrypter;
 import com.nimbusds.jose.crypto.DirectEncrypter;
 import com.nimbusds.jose.crypto.MACSigner;
+import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jose.jwk.OctetSequenceKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.SecurityFilterChain;
 
 import java.text.ParseException;
@@ -30,7 +36,12 @@ public class LearnSpringSecurityApplication {
                 .accessTokenSerializer(new AccessTokenJwsStringSerializer(
                         new MACSigner(OctetSequenceKey.parse(accessTokenKey))))
                 .refreshTokenSerializer(new RefreshTokenJweStringSerializer(
-                        new DirectEncrypter(OctetSequenceKey.parse(refreshTokenKey))));
+                        new DirectEncrypter(OctetSequenceKey.parse(refreshTokenKey))))
+                .accessTokenStringDeserializer(new AccessTokenJwsStringDeserializer(
+                        new MACVerifier(OctetSequenceKey.parse(accessTokenKey))))
+                .refreshTokenStringDeserializer(new RefreshTokenJweStringDeserializer(
+                        new DirectDecrypter(OctetSequenceKey.parse(refreshTokenKey))));
+
     }
 
     @Bean
@@ -48,6 +59,20 @@ public class LearnSpringSecurityApplication {
                                 .requestMatchers("/error").permitAll()
                                 .anyRequest().authenticated())
                 .build();
+    }
+
+    @Bean
+    public UserDetailsService userDetailsService(JdbcTemplate jdbcTemplate) {
+        return username -> jdbcTemplate.query("select * from t_user where c_username = ?",
+                (rs, i) -> User.builder()
+                        .username(rs.getString("c_username"))
+                        .password(rs.getString("c_password"))
+                        .authorities(
+                                jdbcTemplate.query("select c_authority from t_user_authority where id_user = ?",
+                                        (rs1, i1) ->
+                                                new SimpleGrantedAuthority(rs1.getString("c_authority")),
+                                        rs.getInt("id")))
+                        .build(), username).stream().findFirst().orElse(null);
     }
 
 }
