@@ -17,9 +17,9 @@ import java.util.function.Function;
 
 public class JwtAuthenticationConfigurer extends AbstractHttpConfigurer<JwtAuthenticationConfigurer, HttpSecurity> {
 
-    private Function<Token, String> refreshTokenSerializer = o -> Objects.toString(o);
+    private Function<Token, String> refreshTokenSerializer = Objects::toString;
 
-    private Function<Token, String> accessTokenSerializer = o -> Objects.toString(o);
+    private Function<Token, String> accessTokenSerializer = Objects::toString;
 
     private Function<String, Token> accessTokenStringDeserializer;
 
@@ -51,8 +51,11 @@ public class JwtAuthenticationConfigurer extends AbstractHttpConfigurer<JwtAuthe
         var authenticationProvider = new PreAuthenticatedAuthenticationProvider();
         authenticationProvider.setPreAuthenticatedUserDetailsService(new TokenAuthenticationUserDetailsService());
 
+        var refreshTokenFilter = new RefreshTokenFilter();
+
         builder.addFilterAfter(requestJwtTokensFilter, ExceptionTranslationFilter.class)
                 .addFilterBefore(jwtAuthenticationFilter, CsrfFilter.class)
+                .addFilterAfter(refreshTokenFilter, ExceptionTranslationFilter.class)
                 .authenticationProvider(authenticationProvider);
 
     }
